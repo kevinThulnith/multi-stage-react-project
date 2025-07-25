@@ -30,7 +30,7 @@ const TicTacToeIcon: React.FC = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
-      d="M4 6h16M4 12h16M4 18h16"
+      d="M8 4v16M16 4v16M4 8h16M4 16h16"
     />
   </svg>
 );
@@ -58,11 +58,42 @@ const HangmanIcon: React.FC = () => (
     viewBox="0 0 24 24"
     stroke="currentColor"
   >
+    {/* Gallows structure */}
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
-      d="M4.87 2.25a2.25 2.25 0 012.25 2.25v12a2.25 2.25 0 01-2.25 2.25h0a2.25 2.25 0 01-2.25-2.25v-12a2.25 2.25 0 012.25-2.25h0zm14.26 0a2.25 2.25 0 012.25 2.25v12a2.25 2.25 0 01-2.25 2.25h0a2.25 2.25 0 01-2.25-2.25v-12a2.25 2.25 0 012.25-2.25h0zM9.75 12h4.5"
+      d="M4 20V4h8v2M12 4h4"
+    />
+    {/* Noose */}
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M16 6v2"
+    />
+    {/* Stick figure head */}
+    <circle cx="16" cy="10" r="1" strokeWidth={2} />
+    {/* Body */}
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M16 11v4"
+    />
+    {/* Arms */}
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M14 13h4"
+    />
+    {/* Legs */}
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M16 15l-1.5 2M16 15l1.5 2"
     />
   </svg>
 );
@@ -143,12 +174,94 @@ const BrickBreakerIcon: React.FC = () => (
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
-    strokeWidth={2}
   >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M4 4h16v4H4V4zm0 6h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zm-12 6h16v4H4v-4z"
+    {/* Brick pattern */}
+    <rect
+      x="3"
+      y="4"
+      width="4"
+      height="1.5"
+      strokeWidth={1.5}
+      fill="currentColor"
+      fillOpacity="0.8"
+    />
+    <rect
+      x="8"
+      y="4"
+      width="4"
+      height="1.5"
+      strokeWidth={1.5}
+      fill="currentColor"
+      fillOpacity="0.8"
+    />
+    <rect
+      x="13"
+      y="4"
+      width="4"
+      height="1.5"
+      strokeWidth={1.5}
+      fill="currentColor"
+      fillOpacity="0.8"
+    />
+    <rect
+      x="18"
+      y="4"
+      width="3"
+      height="1.5"
+      strokeWidth={1.5}
+      fill="currentColor"
+      fillOpacity="0.8"
+    />
+
+    <rect
+      x="3"
+      y="6"
+      width="3"
+      height="1.5"
+      strokeWidth={1.5}
+      fill="currentColor"
+      fillOpacity="0.6"
+    />
+    <rect
+      x="7"
+      y="6"
+      width="4"
+      height="1.5"
+      strokeWidth={1.5}
+      fill="currentColor"
+      fillOpacity="0.6"
+    />
+    <rect
+      x="12"
+      y="6"
+      width="4"
+      height="1.5"
+      strokeWidth={1.5}
+      fill="currentColor"
+      fillOpacity="0.6"
+    />
+    <rect
+      x="17"
+      y="6"
+      width="4"
+      height="1.5"
+      strokeWidth={1.5}
+      fill="currentColor"
+      fillOpacity="0.6"
+    />
+
+    {/* Ball */}
+    <circle cx="15" cy="13" r="1" strokeWidth={2} fill="currentColor" />
+
+    {/* Paddle with rounded ends */}
+    <rect
+      x="8"
+      y="19"
+      width="8"
+      height="1.2"
+      rx="0.6"
+      strokeWidth={1.5}
+      fill="currentColor"
     />
   </svg>
 );

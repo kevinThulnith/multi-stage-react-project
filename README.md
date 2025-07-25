@@ -89,13 +89,13 @@ Choose your preferred setup method:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/kevinThulnith/game-cave.git
+   git clone https://github.com/kevinThulnith/multi-stage-react-project.git
    ```
 
-2. **Navigate to the frontend directory:**
+2. **Navigate to the project directory:**
 
    ```bash
-   cd javascript-games/frontend
+   cd multi-stage-react-project
    ```
 
 3. **Install dependencies:**
@@ -106,10 +106,10 @@ Choose your preferred setup method:
 
 4. **Set up environment variables (optional):**
 
-   Create a `.env` file in the frontend directory:
+   Create a `.env` file in the root directory:
 
    ```bash
-   # In the frontend directory
+   # In the root directory
    touch .env
    ```
 
@@ -130,6 +130,9 @@ Choose your preferred setup method:
 
 ```bash
 npm run dev
+
+// On local Network
+npx vite --host {Device Ip Address}
 ```
 
 - Starts the development server at `http://localhost:5173/`\_
@@ -184,8 +187,8 @@ The easiest way to deploy your Game Cave is using [Vercel](https://vercel.com/):
    # Install Vercel CLI
    npm i -g vercel
 
-   # Deploy from the frontend directory
-   cd frontend
+   # Deploy from the root directory
+   cd multi-stage-react-project
    vercel
    ```
 
@@ -201,16 +204,15 @@ For Vercel deployment, make sure your build settings are:
 - **Build Command:** `npm run build`
 - **Output Directory:** `dist`
 - **Install Command:** `npm install`
-- **Root Directory:** `frontend`
+- **Root Directory:** `multi-stage-react-project`
 
 ### Environment Variables
 
 For basic gameplay, no environment variables are required - the games run entirely on the client side! However, if you want to set up the project for future AI-powered features:
 
-1. **Create a `.env` file in the frontend directory:**
+1. **Create a `.env` file in the root directory:**
 
    ```bash
-   cd frontend
    touch .env  # On Windows: type nul > .env
    ```
 
@@ -252,10 +254,10 @@ docker compose version
 
 #### Method 1: Direct Docker Build & Run
 
-1. **Navigate to the frontend directory:**
+1. **Navigate to the project directory:**
 
    ```bash
-   cd frontend
+   cd multi-stage-react-project
    ```
 
 2. **Build the Docker image:**
@@ -294,8 +296,8 @@ docker compose version
 #### Method 2: Docker Compose (Recommended)
 
 ```bash
-# Navigate to frontend directory
-cd frontend
+# Navigate to project directory
+cd multi-stage-react-project
 
 # Start the application with Docker Compose
 docker compose up -d
