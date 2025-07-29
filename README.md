@@ -468,6 +468,76 @@ docker exec -it game-cave-dev sh
 
 ---
 
+## 🌳 Development Branches
+
+This repository contains multiple branches representing different development stages and feature implementations:
+
+### 📋 Branch Overview
+
+| Branch                             | Description                          | Status    | Features                                          |
+| ---------------------------------- | ------------------------------------ | --------- | ------------------------------------------------- |
+| 🌟 **`main`**                      | Production-ready version             | ✅ Active | Full game collection with modern React setup      |
+| 🐳 **`docker`**                    | Docker containerization              | ✅ Active | Docker support for consistent deployment          |
+| 🔄 **`SSR-Server-Side-Rendering`** | Server-side rendering implementation | ✅ Active | Enhanced SEO and faster initial loads             |
+| 🚀 **`SSR+Docker`**                | Combined SSR and Docker              | ✅ Active | Full-stack solution with SSR and containerization |
+
+### 🔄 Branch Development Flow
+
+```mermaid
+graph LR
+    A[main] --> B[docker]
+    A --> C[SSR-Server-Side-Rendering]
+    B --> D[SSR+Docker]
+    C --> D
+```
+
+### 🎯 Choosing the Right Branch
+
+- **For basic development:** Use `main` branch
+- **For containerized deployment:** Check out `docker` branch
+- **For SEO optimization:** Use `SSR-Server-Side-Rendering` branch
+- **For production deployment:** Use `SSR+Docker` branch (recommended)
+
+### 🔀 Switching Branches
+
+```bash
+# View all branches
+git branch -a
+
+# Switch to a specific branch
+git checkout docker
+git checkout SSR-Server-Side-Rendering
+git checkout SSR+Docker
+
+# Return to main branch
+git checkout main
+```
+
+### 🚀 Branch-Specific Features
+
+#### 🐳 Docker Branch
+
+- Complete Docker containerization
+- Multi-stage build process
+- Development and production Dockerfiles
+- Docker Compose configuration
+
+#### 🔄 SSR Branch
+
+- Server-side rendering with Express.js
+- Enhanced SEO capabilities
+- Faster initial page loads
+- Better Core Web Vitals scores
+
+#### 🚀 SSR+Docker Branch
+
+- Combined benefits of SSR and Docker
+- Production-ready deployment
+- Scalable architecture
+- Cloud deployment optimized
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! Here's how you can help:
