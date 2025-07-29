@@ -5,10 +5,11 @@
 [![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](#)
 [![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)](#)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](#)
+![Google Gemini](https://img.shields.io/badge/google%20gemini-8E75B2?logo=google%20gemini&logoColor=white)
 
 # Game Cave 🎮
 
-A collection of classic game projects developed with **Vite | React | Tailwind CSS and TypeScript** with **Server-Side Rendering (SSR)**. 🚀 **[Live Demo on Vercel](https://game-cave-mu.vercel.app/)** | 📱 **Mobile Friendly** | ⚡ **Lightning Fast** | 🐳 **Docker Ready** | 🔄 **SSR Enabled**
+A collection of classic game projects developed with **Vite | React | Tailwind CSS and TypeScript** with **Server-Side Rendering (SSR)** and **Google Gemini AI Integration**. 🚀 **[Live Demo on Vercel](https://game-cave-mu.vercel.app/)** | 📱 **Mobile Friendly** | ⚡ **Lightning Fast** | 🐳 **Docker Ready** | 🔄 **SSR Enabled** | 🤖 **AI-Powered Features**
 
 <img src="face.png">
 
@@ -43,17 +44,30 @@ A collection of classic game projects developed with **Vite | React | Tailwind C
 - **⚡ Typing Test** - Improve your typing speed and accuracy
 - **🔤 Word Scramble** - Unscramble letters to form words
 
+### 🤖 AI-Enhanced Features
+
+Experience the power of **Google Gemini AI** integrated into select games:
+
+- **🎪 Hangman** - AI generates dynamic word hints and contextual clues
+- **🔤 Word Scramble** - Smart difficulty adjustment and AI-powered word generation
+- **🎯 Tic Tac Toe** - AI opponent with adaptive difficulty levels
+- **🧠 Memory Match** - Intelligent pattern analysis and performance insights
+- **⚡ Typing Test** - AI-curated text content and personalized improvement suggestions
+
+> **💡 Pro Tip:** Set up your Gemini API key to unlock these enhanced AI features! The games work perfectly without it, but AI features add an extra layer of intelligence and personalization.
+
 ---
 
 ## ✨ Key Features
 
 - 🎮 **12 Classic Games** - A diverse collection of timeless games
+- 🤖 **AI-Powered Features** - Enhanced gameplay with Google Gemini AI integration
 - 📱 **Responsive Design** - Perfect on desktop, tablet, and mobile
 - ⚡ **Lightning Fast** - Built with Vite for optimal performance
 - 🎨 **Modern UI** - Clean, intuitive interface with TailwindCSS
 - 🔧 **Type Safe** - Written in TypeScript for reliability
-- � **Server-Side Rendering (SSR)** - Faster initial page loads and better SEO
-- �🐳 **Docker Ready** - Containerized deployment for any environment
+- 🔄 **Server-Side Rendering (SSR)** - Faster initial page loads and better SEO
+- 🐳 **Docker Ready** - Containerized deployment for any environment
 - 🌐 **Multi-Platform Deploy** - Vercel, Docker, or cloud platforms
 - 🎯 **PWA Ready** - Can be installed as a Progressive Web App
 - 🔄 **State Management** - Smooth game state handling
@@ -104,7 +118,7 @@ Choose your preferred setup method:
    npm i
    ```
 
-4. **Set up environment variables (optional):**
+4. **Set up environment variables (required for AI features):**
 
    Create a `.env` file in the root directory:
 
@@ -116,11 +130,11 @@ Choose your preferred setup method:
    Add the following environment variables to your `.env` file:
 
    ```env
-   # Optional: Gemini API Key for future AI features
+   # Required: Gemini API Key for AI-powered game features
    GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
-   > **Note:** The GEMINI_API_KEY is currently set up for potential future AI-powered features but is not required for basic gameplay. You can obtain a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey) if you plan to extend the games with AI functionality.
+   > **Note:** The GEMINI_API_KEY is now actively used in some games for AI-powered features. You can obtain a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey). While the games will still function without the API key, some AI-enhanced features will be disabled.
 
  <br>
 
@@ -208,7 +222,7 @@ For Vercel deployment, make sure your build settings are:
 
 ### Environment Variables
 
-For basic gameplay, no environment variables are required - the games run entirely on the client side! However, if you want to set up the project for future AI-powered features:
+For enhanced AI-powered gameplay features, you'll need to set up the Gemini API key. While basic gameplay works without it, some games include AI-enhanced features that require this configuration.
 
 1. **Create a `.env` file in the root directory:**
 
@@ -219,14 +233,20 @@ For basic gameplay, no environment variables are required - the games run entire
 2. **Add the following variables:**
 
    ```env
-   # Optional: For future AI-powered game features
+   # Required for AI-powered game features
    GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
-3. **Get your Gemini API Key (optional):**
+3. **Get your Gemini API Key:**
+
    - Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
    - Create a new API key
    - Replace `your_gemini_api_key_here` with your actual key
+
+4. **For Vercel deployment:**
+   - Go to your Vercel project dashboard
+   - Navigate to Settings > Environment Variables
+   - Add `GEMINI_API_KEY` with your API key value
 
 > **Important:** Never commit your `.env` file to version control. The `.env` file is already included in `.gitignore` for your security.
 
@@ -460,6 +480,12 @@ docker exec -it game-cave-dev sh
 - **🔧 ESLint** - Code linting for maintaining code quality
 - **🔄 Express.js** - Server-side rendering and API handling
 
+### AI & Intelligence
+
+- **🤖 Google Gemini AI** - Advanced AI integration for enhanced gameplay features
+- **🧠 Smart Game Logic** - AI-powered hints, difficulty adjustment, and content generation
+- **📊 Intelligent Analytics** - AI-driven performance insights and personalized recommendations
+
 ### Deployment & DevOps
 
 - **🐳 Docker** - Containerization for consistent deployments
@@ -560,15 +586,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 🎮 Inspired by classic arcade and casual games
 - ⚡ Built with modern web technologies for the best user experience
+- 🤖 Enhanced with Google Gemini AI for intelligent gameplay features
 - 🌐 Deployed on Vercel for blazing-fast global delivery
 - 🙏 Thanks to all contributors who help make this project better!
-- 💡 Special thanks to the React, TypeScript, and Vite communities
+- 💡 Special thanks to the React, TypeScript, Vite, and Google AI communities
 
 ---
 
 ## 📊 Project Stats
 
 - 🎯 **12 Games** implemented and ready to play
+- 🤖 **AI-Enhanced** - 5 games feature Google Gemini AI integration
 - 📦 **Lightweight Bundle** - Optimized for fast loading
 - 🌍 **Global CDN** - Fast delivery worldwide via Vercel
 - 📱 **Mobile Optimized** - Works perfectly on all devices
