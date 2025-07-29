@@ -1,7 +1,14 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import React, { useState, useEffect } from "react";
 import { randomWord } from "../words";
 
 const WORDS = Array.from({ length: 6 }, () => randomWord());
+
+// Access the environment variable for Gemini API
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+// Initialize the GoogleGenerativeAI client
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 const scrambleWord = (word: string): string => {
   const arr = word.split("");
@@ -13,23 +20,66 @@ const scrambleWord = (word: string): string => {
 };
 
 const WordScramble: React.FC = () => {
+  const [hint, setHint] = useState("");
   const [score, setScore] = useState(0);
   const [guess, setGuess] = useState("");
   const [message, setMessage] = useState("");
+  const [hintUsed, setHintUsed] = useState(false);
   const [originalWord, setOriginalWord] = useState("");
   const [scrambledWord, setScrambledWord] = useState("");
+  const [isHintLoading, setIsHintLoading] = useState(false);
+  const [hintError, setHintError] = useState<string | null>(null);
 
   const setupNewWord = () => {
     const newWord = WORDS[Math.floor(Math.random() * WORDS.length)];
-    setOriginalWord(newWord);
-    setScrambledWord(scrambleWord(newWord));
+    setHint("");
     setGuess("");
     setMessage("");
+    setHintUsed(false);
+    setHintError(null);
+    setIsHintLoading(false);
+    setOriginalWord(newWord);
+    setScrambledWord(scrambleWord(newWord));
   };
 
   useEffect(() => {
     setupNewWord();
   }, []);
+
+  // Function to call Gemini API and get a hint
+  const getHint = async () => {
+    if (!originalWord || hintUsed || isHintLoading) return;
+
+    setIsHintLoading(true);
+    setHintError(null);
+
+    if (!GEMINI_API_KEY || !genAI) {
+      setHintError(
+        "API key not found. Please set VITE_GEMINI_API_KEY in your .env file."
+      );
+      setIsHintLoading(false);
+      return;
+    }
+
+    const prompt = `Provide a short, one-sentence clue for the word "${originalWord}" for a word scramble game. Do not use the word "${originalWord}" in your clue.`;
+
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const hintText = response.text();
+
+      if (hintText) {
+        setHint(hintText.trim());
+        setHintUsed(true); // Mark hint as used for this round
+      } else throw new Error("Could not extract hint from API response.");
+    } catch (error) {
+      console.error("Error fetching hint:", error);
+      setHintError("Sorry, couldn't fetch a hint right now.");
+    } finally {
+      setIsHintLoading(false);
+    }
+  };
 
   const handleGuess = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,12 +116,30 @@ const WordScramble: React.FC = () => {
         </p>
       </div>
 
+      {/* Hint display and button section */}
+      <div className="flex flex-col items-center justify-center">
+        {!hint && !isHintLoading && !hintError && (
+          <button
+            onClick={getHint}
+            disabled={hintUsed || isHintLoading}
+            className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Get a Hint
+          </button>
+        )}
+        {isHintLoading && (
+          <p className="text-slate-400 animate-pulse">Generating hint...</p>
+        )}
+        {hintError && <p className="text-red-400">{hintError}</p>}
+        {hint && <p className="text-yellow-300 text-lg italic">Hint: {hint}</p>}
+      </div>
+
       <p
-        className={`text-lg mb-4 h-6 ${
+        className={`text-lg my-5 h-6 ${
           message.includes("Correct") ? "text-green-400" : "text-red-400"
         }`}
       >
-        {message}
+        {message ? message : "Make a guess!"}
       </p>
 
       <form
