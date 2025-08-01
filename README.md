@@ -5,7 +5,7 @@
 [![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](#)
 [![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)](#)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](#)
-![Google Gemini](https://img.shields.io/badge/google%20gemini-8E75B2?logo=google%20gemini&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2?logo=google%20gemini&logoColor=white)
 
 # Game Cave 🎮
 
