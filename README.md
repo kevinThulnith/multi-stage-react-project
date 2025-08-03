@@ -9,7 +9,7 @@
 
 # Game Cave 🎮
 
-A collection of classic game projects developed with **Vite | React | Tailwind CSS and TypeScript** with **Server-Side Rendering (SSR)** and **Google Gemini AI Integration**. 🚀 **[Live Demo on Vercel](https://game-cave-mu.vercel.app/)** | 📱 **Mobile Friendly** | ⚡ **Lightning Fast** | 🐳 **Docker Ready** | 🔄 **SSR Enabled** | 🤖 **AI-Powered Features**
+A collection of classic game projects developed with **Vite | React | Tailwind CSS and TypeScript** with **Server-Side Rendering (SSR)** and **Google Gemini AI Integration**. 🚀 **[Live Demo on Vercel](https://multi-stage-react-project.vercel.app/)** | 📱 **Mobile Friendly** | ⚡ **Lightning Fast** | 🐳 **Docker Ready** | 🔄 **SSR Enabled** | 🤖 **AI-Powered Features**
 
 <img src="face.png">
 
