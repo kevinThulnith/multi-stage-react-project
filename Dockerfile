@@ -1,7 +1,7 @@
 # ---- Stage 1: Build ----
 
 # Get a Node.js base image
-FROM node:22-alpine3.21 as builder
+FROM node:22-alpine3.21 AS builder
 
 # Set the working directory
 WORKDIR /app
