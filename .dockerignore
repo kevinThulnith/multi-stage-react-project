@@ -1,5 +1,4 @@
 dist
-.env
 .vscode
 .DS_Store
 vercel.json

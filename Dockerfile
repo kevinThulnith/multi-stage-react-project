@@ -13,8 +13,6 @@ RUN npm i
 # Copy the rest of the application code
 COPY . .
 
-ENV GEMINI_API_KEY=your_gemini_api_key_here
-
 # Build the application for production
 # This runs "build:client" and "build:server"
 RUN npm run build
@@ -40,8 +38,6 @@ COPY --from=builder /app/dist ./dist
 # Copy the server and the root html file
 COPY --from=builder /app/server.ts .
 COPY --from=builder /app/index.html .
-
-ENV GEMINI_API_KEY=your_gemini_api_key_here
 
 # Expose the port the app runs on
 EXPOSE 5173
