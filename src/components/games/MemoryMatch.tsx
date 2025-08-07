@@ -14,9 +14,9 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 };
 
 const MemoryMatch: React.FC = () => {
+  const [moves, setMoves] = useState(0);
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
-  const [moves, setMoves] = useState(0);
 
   const initializeGame = () => {
     const duplicatedEmojis = [...EMOJIS, ...EMOJIS];

@@ -6,13 +6,13 @@ const INITIAL_SNAKE = [{ x: 10, y: 10 }];
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
 const Snake: React.FC = () => {
+  const [score, setScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
   const [snake, setSnake] = useState(INITIAL_SNAKE);
   const [food, setFood] = useState({ x: 15, y: 15 });
-  const [direction, setDirection] = useState<Direction>("RIGHT");
   const [speed, setSpeed] = useState<number | null>(200);
-  const [gameOver, setGameOver] = useState(false);
-  const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
+  const [direction, setDirection] = useState<Direction>("RIGHT");
 
   const createFood = useCallback((currentSnake: { x: number; y: number }[]) => {
     let newFood: { x: number; y: number };

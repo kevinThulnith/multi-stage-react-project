@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
+const BRICK_GAP = 4;
+const BRICK_ROWS = 5;
+const BALL_RADIUS = 8;
+const BRICK_COLS = 10;
 const GAME_WIDTH = 600;
 const GAME_HEIGHT = 450;
-const PADDLE_WIDTH = 100;
-const PADDLE_HEIGHT = 15;
-const BALL_RADIUS = 8;
-const BRICK_ROWS = 5;
-const BRICK_COLS = 10;
 const BRICK_HEIGHT = 20;
-const BRICK_GAP = 4;
+const PADDLE_HEIGHT = 15;
+const PADDLE_WIDTH = 100;
 const BRICK_OFFSET_TOP = 30;
 const BRICK_OFFSET_LEFT = 30;
 const BRICK_WIDTH =
@@ -40,22 +40,21 @@ const createBricks = (): Brick[] => {
 };
 
 const BrickBreaker: React.FC = () => {
+  const [score, setScore] = useState(0);
+  const [lives, setLives] = useState(3);
+  const animationFrameId = useRef<number>(0);
+  const gameAreaRef = useRef<HTMLDivElement>(null);
+  const [bricks, setBricks] = useState<Brick[]>(createBricks());
+  const [paddleX, setPaddleX] = useState((GAME_WIDTH - PADDLE_WIDTH) / 2);
   const [gameState, setGameState] = useState<
     "start" | "playing" | "won" | "lost"
   >("start");
-  const [paddleX, setPaddleX] = useState((GAME_WIDTH - PADDLE_WIDTH) / 2);
   const [ball, setBall] = useState({
     x: GAME_WIDTH / 2,
     y: GAME_HEIGHT - 50,
     dx: 3,
     dy: -3,
   });
-  const [bricks, setBricks] = useState<Brick[]>(createBricks());
-  const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
-
-  const gameAreaRef = useRef<HTMLDivElement>(null);
-  const animationFrameId = useRef<number>(0);
 
   const resetLevel = useCallback((newLives: number) => {
     setPaddleX((GAME_WIDTH - PADDLE_WIDTH) / 2);
@@ -65,9 +64,7 @@ const BrickBreaker: React.FC = () => {
       setScore(0);
       setLives(3);
       setGameState("lost");
-    } else {
-      setLives(newLives);
-    }
+    } else setLives(newLives);
   }, []);
 
   const startGame = () => {
@@ -83,7 +80,7 @@ const BrickBreaker: React.FC = () => {
     if (gameState !== "playing") return;
 
     // Ball movement
-    let newBall = { ...ball };
+    const newBall = { ...ball };
     newBall.x += newBall.dx;
     newBall.y += newBall.dy;
 
@@ -103,7 +100,7 @@ const BrickBreaker: React.FC = () => {
     }
 
     // Brick collision
-    let newBricks = [...bricks];
+    const newBricks = [...bricks];
     let newScore = score;
     let bricksLeft = false;
     newBricks.forEach((brick) => {
@@ -133,19 +130,16 @@ const BrickBreaker: React.FC = () => {
     }
 
     // Lose life
-    if (newBall.y > GAME_HEIGHT) {
-      resetLevel(lives - 1);
-    } else {
-      setBall(newBall);
-    }
+    if (newBall.y > GAME_HEIGHT) resetLevel(lives - 1);
+    else setBall(newBall);
 
     animationFrameId.current = requestAnimationFrame(gameLoop);
   }, [ball, bricks, paddleX, score, lives, gameState, resetLevel]);
 
   useEffect(() => {
-    if (gameState === "playing") {
+    if (gameState === "playing")
       animationFrameId.current = requestAnimationFrame(gameLoop);
-    }
+
     return () => {
       if (animationFrameId.current)
         cancelAnimationFrame(animationFrameId.current);

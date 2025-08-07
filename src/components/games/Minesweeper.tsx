@@ -110,9 +110,7 @@ const Minesweeper: React.FC = () => {
     if (isFirstClick) {
       newBoard = plantMines(board, r, c);
       setIsFirstClick(false);
-    } else {
-      newBoard = JSON.parse(JSON.stringify(board));
-    }
+    } else newBoard = JSON.parse(JSON.stringify(board));
 
     if (newBoard[r][c].isMine) {
       setGameWon(false);
