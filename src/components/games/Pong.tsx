@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
+const BALL_SIZE = 12;
 const GAME_WIDTH = 600;
 const GAME_HEIGHT = 400;
+const WINNING_SCORE = 5;
 const PADDLE_WIDTH = 12;
 const PADDLE_HEIGHT = 80;
-const BALL_SIZE = 12;
-const WINNING_SCORE = 5;
 
 const Pong: React.FC = () => {
+  const animationFrameId = useRef<number>(0);
+  const gameAreaRef = useRef<HTMLDivElement>(null);
+  const [score, setScore] = useState({ player: 0, ai: 0 });
   const [gameState, setGameState] = useState<"start" | "playing" | "over">(
     "start"
   );
@@ -21,10 +24,6 @@ const Pong: React.FC = () => {
     player: (GAME_HEIGHT - PADDLE_HEIGHT) / 2,
     ai: (GAME_HEIGHT - PADDLE_HEIGHT) / 2,
   });
-  const [score, setScore] = useState({ player: 0, ai: 0 });
-
-  const gameAreaRef = useRef<HTMLDivElement>(null);
-  const animationFrameId = useRef<number>(0);
 
   const resetBall = useCallback((direction: number) => {
     setBall({
@@ -46,15 +45,13 @@ const Pong: React.FC = () => {
 
     setBall((prevBall) => {
       let { x, y, dx, dy } = prevBall;
-      let newScore = { ...score };
+      const newScore = { ...score };
 
       x += dx;
       y += dy;
 
       // Wall collision (top/bottom)
-      if (y <= 0 || y >= GAME_HEIGHT - BALL_SIZE) {
-        dy = -dy;
-      }
+      if (y <= 0 || y >= GAME_HEIGHT - BALL_SIZE) dy = -dy;
 
       // Paddle collision
       const playerY = paddles.player;
@@ -65,17 +62,16 @@ const Pong: React.FC = () => {
         x <= PADDLE_WIDTH &&
         y + BALL_SIZE >= playerY &&
         y <= playerY + PADDLE_HEIGHT
-      ) {
+      )
         dx = -dx * 1.05; // Increase speed slightly
-      }
+
       // AI paddle
       if (
         x >= GAME_WIDTH - PADDLE_WIDTH - BALL_SIZE &&
         y + BALL_SIZE >= aiY &&
         y <= aiY + PADDLE_HEIGHT
-      ) {
+      )
         dx = -dx * 1.05;
-      }
 
       // Score points
       if (x < 0) {
@@ -90,9 +86,8 @@ const Pong: React.FC = () => {
 
       setScore(newScore);
 
-      if (newScore.player >= WINNING_SCORE || newScore.ai >= WINNING_SCORE) {
+      if (newScore.player >= WINNING_SCORE || newScore.ai >= WINNING_SCORE)
         setGameState("over");
-      }
 
       return { x, y, dx, dy };
     });
@@ -103,11 +98,8 @@ const Pong: React.FC = () => {
       const ballCenter = ball.y + BALL_SIZE / 2;
       let newAiY = prevPaddles.ai;
 
-      if (aiCenter < ballCenter) {
-        newAiY += 3;
-      } else if (aiCenter > ballCenter) {
-        newAiY -= 3;
-      }
+      if (aiCenter < ballCenter) newAiY += 3;
+      else if (aiCenter > ballCenter) newAiY -= 3;
 
       newAiY = Math.max(0, Math.min(GAME_HEIGHT - PADDLE_HEIGHT, newAiY));
       return { ...prevPaddles, ai: newAiY };
@@ -117,13 +109,12 @@ const Pong: React.FC = () => {
   }, [ball.y, gameState, paddles.player, paddles.ai, resetBall, score]);
 
   useEffect(() => {
-    if (gameState === "playing") {
+    if (gameState === "playing")
       animationFrameId.current = requestAnimationFrame(gameLoop);
-    }
+
     return () => {
-      if (animationFrameId.current) {
+      if (animationFrameId.current)
         cancelAnimationFrame(animationFrameId.current);
-      }
     };
   }, [gameState, gameLoop]);
 
@@ -144,9 +135,9 @@ const Pong: React.FC = () => {
   }, []);
 
   const getMessage = () => {
-    if (gameState === "over") {
+    if (gameState === "over")
       return score.player > score.ai ? "You Win!" : "AI Wins!";
-    }
+
     return "";
   };
 

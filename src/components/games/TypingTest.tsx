@@ -23,16 +23,12 @@ const TypingTest: React.FC = () => {
       const wordsTyped = finalText.trim().split(/\s+/).length;
       const calculatedWpm = Math.round(wordsTyped / durationInMinutes);
       setWpm(calculatedWpm);
-    } else {
-      setWpm(0);
-    }
+    } else setWpm(0);
 
     let correctChars = 0;
     const compareLength = Math.min(finalText.length, TEXT_TO_TYPE.length);
     for (let i = 0; i < compareLength; i++) {
-      if (finalText[i] === TEXT_TO_TYPE[i]) {
-        correctChars++;
-      }
+      if (finalText[i] === TEXT_TO_TYPE[i]) correctChars++;
     }
     const newAccuracy =
       TEXT_TO_TYPE.length > 0

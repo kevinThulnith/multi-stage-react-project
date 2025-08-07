@@ -54,9 +54,7 @@ const Hangman: React.FC = () => {
     if (gameStatus !== "playing" || guessedLetters.includes(letter)) return;
 
     setGuessedLetters([...guessedLetters, letter]);
-    if (!word.includes(letter)) {
-      setWrongGuesses((prev) => prev + 1);
-    }
+    if (!word.includes(letter)) setWrongGuesses((prev) => prev + 1);
   };
 
   // NEW: Function to call Gemini API and get a hint
