@@ -1,8 +1,8 @@
-# Build outputs
+# Build outputs (we build inside Docker)
 dist
 dist-ssr
 
-# Dependencies
+# Dependencies (we install inside Docker)
 node_modules
 
 # Logs
@@ -39,6 +39,12 @@ Dockerfile*
 # Documentation
 README.md
 *.md
+docs
+
+# Testing
+coverage
+.nyc_output
 
 # Other
 .vercel
+.netlify

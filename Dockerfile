@@ -1,22 +1,40 @@
+# Build stage
 FROM node:22-alpine3.21 AS builder
 
 WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
 
-RUN npm ci --prefer-offline
+# Install dependencies
+RUN npm ci --prefer-offline --no-audit --no-fund
 
+# Copy source code
 COPY . .
 
+# Build the application
 RUN npm run build
 
-FROM node:22-alpine3.21
+# Debug: List built files (optional - remove in production)
+RUN ls -la /app/dist/
 
-COPY --from=builder /app/dist ./dist
-COPY package*.json ./
+# Production stage
+FROM nginx:alpine
 
-RUN npm ci --production --prefer-offline
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
 
-EXPOSE 4173
+# Copy built assets from builder stage
+COPY --from=builder /app/dist/ /usr/share/nginx/html/
 
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Debug: List copied files (optional - remove in production)
+RUN ls -la /usr/share/nginx/html/
+
+# Expose port 5173
+EXPOSE 5173
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
