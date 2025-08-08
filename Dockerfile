@@ -1,53 +1,38 @@
-# ---- Stage 1: Build ----
-FROM node:22-alpine AS builder
+# Build Stage
+FROM node:22-alpine3.21 AS builder
 
 WORKDIR /app
 
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm ci --prefer-offline --no-audit --no-fund && npm cache clean --force
+RUN npm ci --prefer-offline --no-audit --no-fund
 
-# Copy source and build
+# Copy the rest of the application code
 COPY . .
+
+# Build the application
 RUN npm run build
 
-# ---- Stage 2: Production Runtime ----
-FROM node:22-alpine AS runner
-
-# Install nginx for static file serving
-RUN apk add --no-cache nginx
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S appuser -u 1001 -G nodejs
+# Production Stage
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy package files and install only production dependencies
+# Copy only production dependencies from the builder stage
+COPY --from=builder /app/node_modules ./node_modules
 COPY package*.json ./
-RUN npm ci --only=production --prefer-offline --no-audit --no-fund && \
-    npm install tsx cross-env --prefer-offline --no-audit --no-fund && \
-    npm cache clean --force && \
-    rm -rf /root/.npm /tmp/* /var/cache/apk/*
 
-# Copy built assets and server files
+# We need ts-node and typescript to run server.ts in production
+# A more advanced setup might compile server.ts to JS, but this is simpler.
+RUN npm i -D ts-node typescript cross-env
+
+# Copy the built application assets from the builder stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/index.html ./
-COPY --from=builder /app/server.ts ./
 
-# Copy nginx configuration and startup script
-COPY nginx.conf ./
-COPY start.sh ./
-
-# Make startup script executable
-RUN chmod +x /app/start.sh
-
-# Create required directories and set permissions
-RUN mkdir -p /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp && \
-    chown -R appuser:nodejs /app /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp
-
-USER appuser
+# Copy the server and the root html file
+COPY --from=builder /app/server.ts .
+COPY --from=builder /app/index.html .
 
 EXPOSE 5173
 
-CMD ["/app/start.sh"]
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
