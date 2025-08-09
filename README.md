@@ -5,6 +5,7 @@
 [![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](#)
 [![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)](#)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](#)
+![Nginx](https://img.shields.io/badge/Nginx-009639?logo=nginx&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2?logo=google%20gemini&logoColor=white)
 
 # Game Cave 🎮
@@ -68,6 +69,7 @@ Experience the power of **Google Gemini AI** integrated into select games:
 - 🔧 **Type Safe** - Written in TypeScript for reliability
 - 🔄 **Server-Side Rendering (SSR)** - Faster initial page loads and better SEO
 - 🐳 **Docker Ready** - Containerized deployment for any environment
+- 🌐 **Nginx-Optimized Builds** - Production images served behind Nginx
 - 🌐 **Multi-Platform Deploy** - Vercel, Docker, or cloud platforms
 - 🎯 **PWA Ready** - Can be installed as a Progressive Web App
 - 🔄 **State Management** - Smooth game state handling
@@ -175,13 +177,11 @@ npm run preview
 
 - Preview the production build locally\_
 
-#### Network Access
+#### Network Access - Run on your local network for testing on multiple devices\_
 
 ```bash
 npm run host
 ```
-
-_Run on your local network for testing on multiple devices_
 
 ---
 
@@ -283,11 +283,9 @@ docker compose version
 2. **Build the Docker image:**
 
    ```bash
-   # Development build
+   # Create docker image
+   # In docker and docker+ssr branches  (Docker + Nginx)
    docker build -t game-cave:dev .
-
-   # Production build (coming soon)
-   docker build -f Dockerfile.prod -t game-cave:prod .
    ```
 
 3. **Verify the image was created:**
@@ -299,14 +297,11 @@ docker compose version
 4. **Run the container:**
 
    ```bash
-   # Development mode with hot reload
-   docker run -p 5173:5173 -v "$(pwd):/app" -v /app/node_modules --name game-cave-dev game-cave:dev
-
-   # Simple run (no hot reload)
-   docker run -p 5173:5173 --name game-cave-dev game-cave:dev
-
-   # Run
+   # Run created docker image
    docker run -p 5173:5173 game-cave:dev
+
+   # Run created docker image with custome container name
+   docker run -p 5173:5173 --name game-cave-dev game-cave:dev
    ```
 
 5. **Access your games:**
@@ -327,19 +322,23 @@ docker compose logs -f
 
 # Stop the application
 docker compose down
+
+On the `docker` branch, Compose exposes Nginx on port 5173 by default for a static SPA build. On the `docker+ssr` branch, Compose starts both the SSR Node app and Nginx, with Nginx reverse‑proxying traffic to the app (typically on port 3000) and serving static assets directly for optimal performance.
 ```
 
 ### 🛠️ Docker Commands Cheat Sheet
 
-| Command                                 | Description             |
-| --------------------------------------- | ----------------------- |
-| `docker build -t game-cave:dev .`       | Build development image |
-| `docker run -p 5173:5173 game-cave:dev` | Run container           |
-| `docker ps`                             | List running containers |
-| `docker stop game-cave-dev`             | Stop container          |
-| `docker rm game-cave-dev`               | Remove container        |
-| `docker rmi game-cave:dev`              | Remove image            |
-| `docker logs game-cave-dev`             | View container logs     |
+| Command                                     | Description             |
+| --------------------------------------------| ----------------------- |
+| `docker build -t game-cave:dev .`           | Build development image |
+| `docker run -p 5173:5173 game-cave:dev`     | Run dev container       |
+| `docker run -p 5173:5173 game-cave:prod`    | Run prod (Nginx static) |
+| `docker run -p 5173:5173 game-cave:ssr`     | Run prod (Nginx + SSR)  |
+| `docker ps`                                 | List running containers |
+| `docker stop game-cave-dev`                 | Stop container          |
+| `docker rm game-cave-dev`                   | Remove container        |
+| `docker rmi game-cave:dev`                  | Remove image            |
+| `docker logs game-cave-dev`                 | View container logs     |
 
 ### 🔧 Advanced Configuration
 
@@ -383,6 +382,48 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
+For SSR, Nginx acts as a reverse proxy to the Node server and may also serve static assets directly. Example (simplified):
+
+```nginx
+# Example nginx.conf (docker+ssr branch)
+worker_processes auto;
+events { worker_connections 1024; }
+http {
+   include       /etc/nginx/mime.types;
+   sendfile      on;
+   gzip          on;
+   gzip_types    text/plain application/javascript text/css application/json image/svg+xml;
+
+   upstream app {
+      server 127.0.0.1:3000; # Node SSR server
+   }
+
+   server {
+      listen 80;
+      server_name _;
+
+      # Serve built assets directly if desired
+      location /assets/ {
+         root /usr/share/nginx/html;
+         access_log off;
+         expires 1y;
+         add_header Cache-Control "public, max-age=31536000, immutable";
+      }
+
+      # Proxy everything else to SSR
+      location / {
+         proxy_pass         http://app;
+         proxy_http_version 1.1;
+         proxy_set_header   Upgrade $http_upgrade;
+         proxy_set_header   Connection "upgrade";
+         proxy_set_header   Host $host;
+         proxy_set_header   X-Forwarded-Proto $scheme;
+         proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+      }
+   }
+}
+```
+
 ### 🌐 Network Access & Mobile Testing
 
 ```bash
@@ -397,6 +438,8 @@ ifconfig | grep inet
 ```
 
 Now you can test on mobile devices using `http://your-ip:5173`
+
+For Nginx-based production images (docker or docker+ssr branches), map port 5173 and test via `http://your-ip/`.
 
 ### 🐛 Troubleshooting
 
@@ -500,21 +543,21 @@ This repository contains multiple branches representing different development st
 
 ### 📋 Branch Overview
 
-| Branch                             | Description                          | Status    | Features                                          |
-| ---------------------------------- | ------------------------------------ | --------- | ------------------------------------------------- |
-| 🌟 **`main`**                      | Production-ready version             | ✅ Active | Full game collection with modern React setup      |
-| 🐳 **`docker`**                    | Docker containerization              | ✅ Active | Docker support for consistent deployment          |
-| 🔄 **`SSR-Server-Side-Rendering`** | Server-side rendering implementation | ✅ Active | Enhanced SEO and faster initial loads             |
-| 🚀 **`SSR+Docker`**                | Combined SSR and Docker              | ✅ Active | Full-stack solution with SSR and containerization |
+| Branch                             | Description                          | Status    | Features                                                        |
+| ---------------------------------- | ------------------------------------ | --------- | --------------------------------------------------------------- |
+| 🌟 **`main`**                      | Production-ready version             | ✅ Active | Full game collection with modern React setup                    |
+| 🐳 **`docker`**                    | Docker containerization              | ✅ Active | Docker + Nginx static serving for production                    |
+| 🔄 **`SSR-Server-Side-Rendering`** | Server-side rendering implementation | ✅ Active | Enhanced SEO and faster initial loads                           |
+| 🚀 **`docker+ssr`**                | Combined SSR and Docker              | ✅ Active | Nginx reverse proxy + Node SSR, optimized static asset handling |
 
 ### 🔄 Branch Development Flow
 
 ```mermaid
 graph LR
-    A[main] --> B[docker]
-    A --> C[SSR-Server-Side-Rendering]
-    B --> D[SSR+Docker]
-    C --> D
+   A[main] --> B[docker]
+   A --> C[SSR-Server-Side-Rendering]
+   B --> D[docker+ssr]
+   C --> D
 ```
 
 ### 🎯 Choosing the Right Branch
@@ -522,7 +565,7 @@ graph LR
 - **For basic development:** Use `main` branch
 - **For containerized deployment:** Check out `docker` branch
 - **For SEO optimization:** Use `SSR-Server-Side-Rendering` branch
-- **For production deployment:** Use `SSR+Docker` branch (recommended)
+- **For production deployment:** Use `docker+ssr` branch (recommended)
 
 ### 🔀 Switching Branches
 
@@ -533,7 +576,7 @@ git branch -a
 # Switch to a specific branch
 git checkout docker
 git checkout SSR-Server-Side-Rendering
-git checkout SSR+Docker
+git checkout docker+ssr
 
 # Return to main branch
 git checkout main
@@ -541,12 +584,13 @@ git checkout main
 
 ### 🚀 Branch-Specific Features
 
-#### 🐳 Docker Branch
+#### 🐳 Docker Branch (with Nginx)
 
 - Complete Docker containerization
 - Multi-stage build process
 - Development and production Dockerfiles
 - Docker Compose configuration
+- Nginx serves optimized static build on port 80 with sensible cache headers
 
 #### 🔄 SSR Branch
 
@@ -555,12 +599,15 @@ git checkout main
 - Faster initial page loads
 - Better Core Web Vitals scores
 
-#### 🚀 SSR+Docker Branch
+#### 🚀 docker+ssr Branch (Nginx + SSR)
 
 - Combined benefits of SSR and Docker
 - Production-ready deployment
 - Scalable architecture
 - Cloud deployment optimized
+- Nginx reverse proxies to Node SSR and serves static assets directly when possible
+
+> Note: The Nginx configuration and Dockerfiles referenced above live in the respective branches (`docker` and `docker+ssr`). This main branch README documents how to use them.
 
 ---
 
