@@ -133,10 +133,10 @@ Choose your preferred setup method:
 
    ```env
    # Required: Gemini API Key for AI-powered game features
-   GEMINI_API_KEY=your_gemini_api_key_here
+   VITE_GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
-   > **Note:** The GEMINI_API_KEY is now actively used in some games for AI-powered features. You can obtain a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey). While the games will still function without the API key, some AI-enhanced features will be disabled.
+   > **Note:** The VITE_GEMINI_API_KEY is now actively used in some games for AI-powered features. You can obtain a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey). While the games will still function without the API key, some AI-enhanced features will be disabled.
 
  <br>
 
@@ -234,7 +234,7 @@ For enhanced AI-powered gameplay features, you'll need to set up the Gemini API 
 
    ```env
    # Required for AI-powered game features
-   GEMINI_API_KEY=your_gemini_api_key_here
+   VITE_GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
 3. **Get your Gemini API Key:**
@@ -246,7 +246,7 @@ For enhanced AI-powered gameplay features, you'll need to set up the Gemini API 
 4. **For Vercel deployment:**
    - Go to your Vercel project dashboard
    - Navigate to Settings > Environment Variables
-   - Add `GEMINI_API_KEY` with your API key value
+   - Add `VITE_GEMINI_API_KEY` with your API key value
 
 > **Important:** Never commit your `.env` file to version control. The `.env` file is already included in `.gitignore` for your security.
 
@@ -300,6 +300,9 @@ docker compose version
    # Run created docker image
    docker run -p 5173:5173 game-cave:dev
 
+   # Run created docker image as background process
+   docker run -d -p 5173:5173 game-cave:dev
+
    # Run created docker image with custome container name
    docker run -p 5173:5173 --name game-cave-dev game-cave:dev
    ```
@@ -328,17 +331,17 @@ On the `docker` branch, Compose exposes Nginx on port 5173 by default for a stat
 
 ### 🛠️ Docker Commands Cheat Sheet
 
-| Command                                     | Description             |
-| --------------------------------------------| ----------------------- |
-| `docker build -t game-cave:dev .`           | Build development image |
-| `docker run -p 5173:5173 game-cave:dev`     | Run dev container       |
-| `docker run -p 5173:5173 game-cave:prod`    | Run prod (Nginx static) |
-| `docker run -p 5173:5173 game-cave:ssr`     | Run prod (Nginx + SSR)  |
-| `docker ps`                                 | List running containers |
-| `docker stop game-cave-dev`                 | Stop container          |
-| `docker rm game-cave-dev`                   | Remove container        |
-| `docker rmi game-cave:dev`                  | Remove image            |
-| `docker logs game-cave-dev`                 | View container logs     |
+| Command                                  | Description             |
+| ---------------------------------------- | ----------------------- |
+| `docker build -t game-cave:dev .`        | Build development image |
+| `docker run -p 5173:5173 game-cave:dev`  | Run dev container       |
+| `docker run -p 5173:5173 game-cave:prod` | Run prod (Nginx static) |
+| `docker run -p 5173:5173 game-cave:ssr`  | Run prod (Nginx + SSR)  |
+| `docker ps`                              | List running containers |
+| `docker stop game-cave-dev`              | Stop container          |
+| `docker rm game-cave-dev`                | Remove container        |
+| `docker rmi game-cave:dev`               | Remove image            |
+| `docker logs game-cave-dev`              | View container logs     |
 
 ### 🔧 Advanced Configuration
 
@@ -431,8 +434,10 @@ http {
 docker run -p 0.0.0.0:5173:5173 --name game-cave-dev game-cave:dev
 
 # Find your IP address
+
 # Windows PowerShell:
 ipconfig | findstr IPv4
+
 # macOS/Linux:
 ifconfig | grep inet
 ```
