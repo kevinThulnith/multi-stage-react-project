@@ -283,10 +283,14 @@ docker compose version
 2. **Build the Docker image:**
 
    ```bash
-   # Create docker image
-   # In docker and docker+ssr branches  (Docker + Nginx)
+   # Basic build (without AI features)
    docker build -t game-cave:dev .
+
+   # Build with Gemini API key for AI-powered features
+   docker build --build-arg VITE_GEMINI_API_KEY=your_gemini_api_key_here -t game-cave:dev .
    ```
+
+   > **Note:** Using `--build-arg VITE_GEMINI_API_KEY` passes the API key as a build argument to enable AI-powered features in games like Hangman, Word Scramble, and Tic Tac Toe. Replace `your_gemini_api_key_here` with your actual Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 3. **Verify the image was created:**
 
@@ -331,17 +335,18 @@ On the `docker` branch, Compose exposes Nginx on port 5173 by default for a stat
 
 ### 🛠️ Docker Commands Cheat Sheet
 
-| Command                                  | Description             |
-| ---------------------------------------- | ----------------------- |
-| `docker build -t game-cave:dev .`        | Build development image |
-| `docker run -p 5173:5173 game-cave:dev`  | Run dev container       |
-| `docker run -p 5173:5173 game-cave:prod` | Run prod (Nginx static) |
-| `docker run -p 5173:5173 game-cave:ssr`  | Run prod (Nginx + SSR)  |
-| `docker ps`                              | List running containers |
-| `docker stop game-cave-dev`              | Stop container          |
-| `docker rm game-cave-dev`                | Remove container        |
-| `docker rmi game-cave:dev`               | Remove image            |
-| `docker logs game-cave-dev`              | View container logs     |
+| Command                                                                    | Description             |
+| -------------------------------------------------------------------------- | ----------------------- |
+| `docker build -t game-cave:dev .`                                          | Build development image |
+| `docker build --build-arg VITE_GEMINI_API_KEY=your_key -t game-cave:dev .` | Build with AI features  |
+| `docker run -p 5173:5173 game-cave:dev`                                    | Run dev container       |
+| `docker run -p 5173:5173 game-cave:prod`                                   | Run prod (Nginx static) |
+| `docker run -p 5173:5173 game-cave:ssr`                                    | Run prod (Nginx + SSR)  |
+| `docker ps`                                                                | List running containers |
+| `docker stop game-cave-dev`                                                | Stop container          |
+| `docker rm game-cave-dev`                                                  | Remove container        |
+| `docker rmi game-cave:dev`                                                 | Remove image            |
+| `docker logs game-cave-dev`                                                | View container logs     |
 
 ### 🔧 Advanced Configuration
 
