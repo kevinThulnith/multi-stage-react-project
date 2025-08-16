@@ -15,11 +15,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Environment files
+.env
+.env.*
 *.local
 
 # Editor directories and files
 .vscode
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo

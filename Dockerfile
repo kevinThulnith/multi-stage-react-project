@@ -3,12 +3,18 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Define build arguments for environment variables
+ARG VITE_GEMINI_API_KEY
+
 # Copy and Install dependencies
 COPY package*.json ./
 RUN npm ci --prefer-offline --no-audit --no-fund --silent
 
 # Copy source code
 COPY . .
+
+# Set environment variables from build args
+ENV VITE_GEMINI_API_KEY=$VITE_GEMINI_API_KEY
 
 # Build the application
 RUN npm run build
