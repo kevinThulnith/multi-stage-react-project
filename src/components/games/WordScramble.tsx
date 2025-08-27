@@ -2,7 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import React, { useState, useEffect } from "react";
 import { randomWord } from "../words";
 
-const WORDS = Array.from({ length: 6 }, () => randomWord());
+// Generate 6 different words
+const WORDS = (): string[] => {
+  const words = new Set<string>();
+  while (words.size < 6) words.add(randomWord());
+  return [...words];
+};
 
 // Access the environment variable for Gemini API
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -31,7 +36,7 @@ const WordScramble: React.FC = () => {
   const [hintError, setHintError] = useState<string | null>(null);
 
   const setupNewWord = () => {
-    const newWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+    const newWord = WORDS()[Math.floor(Math.random() * WORDS.length)];
     setHint("");
     setGuess("");
     setMessage("");
