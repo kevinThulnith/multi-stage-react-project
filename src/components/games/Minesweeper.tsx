@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const GRID_SIZE = 10;
+const LONG_PRESS_DURATION = 300; // Long press duration in milliseconds
 const MINE_COUNT = 10;
+const GRID_SIZE = 10;
 
 interface Cell {
   isMine: boolean;
@@ -28,8 +29,10 @@ const createEmptyBoard = (): Board =>
 const Minesweeper: React.FC = () => {
   const [board, setBoard] = useState<Board>(createEmptyBoard());
   const [isFirstClick, setIsFirstClick] = useState(true);
+  const longPressTimer = useRef<number | null>(null);
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
+  const [isLongPress, setIsLongPress] = useState(false);
 
   const plantMines = (
     initialBoard: Board,
@@ -134,6 +137,34 @@ const Minesweeper: React.FC = () => {
     setBoard(newBoard);
   };
 
+  const handleTouchStart = (r: number, c: number) => {
+    if (gameOver || gameWon) return;
+
+    setIsLongPress(false);
+
+    longPressTimer.current = setTimeout(() => {
+      setIsLongPress(true);
+      // Use the same logic as handleRightClick but without the event parameter
+      if (!board[r][c].isRevealed) {
+        const newBoard = JSON.parse(JSON.stringify(board));
+        newBoard[r][c].isFlagged = !newBoard[r][c].isFlagged;
+        setBoard(newBoard);
+      }
+    }, LONG_PRESS_DURATION);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchMove = () => {
+    // If user moves finger, cancel the long press
+    handleTouchEnd();
+  };
+
   useEffect(() => {
     if (isFirstClick || gameOver) return;
     const revealedNonMines = board
@@ -192,8 +223,11 @@ const Minesweeper: React.FC = () => {
           row.map((cell, c) => (
             <button
               key={`${r}-${c}`}
-              onClick={() => handleClick(r, c)}
+              onClick={() => !isLongPress && handleClick(r, c)}
               onContextMenu={(e) => handleRightClick(e, r, c)}
+              onTouchStart={() => handleTouchStart(r, c)}
+              onTouchEnd={handleTouchEnd}
+              onTouchMove={handleTouchMove}
               className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center font-bold text-lg ${
                 cell.isRevealed
                   ? "bg-slate-800"
@@ -213,7 +247,8 @@ const Minesweeper: React.FC = () => {
         Reset Game
       </button>
       <p className="text-sm mt-2 text-slate-400">
-        Left click to reveal, right click to flag.
+        Left click to reveal, right click to flag. On mobile, long press to
+        flag.
       </p>
     </div>
   );
