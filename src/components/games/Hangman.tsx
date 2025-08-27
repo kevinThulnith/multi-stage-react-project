@@ -2,8 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import React, { useState, useEffect } from "react";
 import { randomWord } from "../words";
 
-// Generate 6 random words at module load
-const WORDS = Array.from({ length: 6 }, () => randomWord());
+// Generate 6 different words
+const WORDS = (): string[] => {
+  const words = new Set<string>();
+  while (words.size < 6) words.add(randomWord());
+  return [...words];
+};
 const ALPHABET = "abcdefghijklmnopqrstuvwxyz".split("");
 const MAX_WRONG_GUESSES = 6;
 
@@ -26,7 +30,7 @@ const Hangman: React.FC = () => {
   );
 
   const startNewGame = () => {
-    setWord(WORDS[Math.floor(Math.random() * WORDS.length)]);
+    setWord(WORDS()[Math.floor(Math.random() * WORDS().length)]);
     setHint("");
     setHintUsed(false);
     setWrongGuesses(0);
