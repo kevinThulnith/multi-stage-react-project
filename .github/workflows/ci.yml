@@ -1,10 +1,10 @@
-name: CI Pipeline
+name: multi-stage-react-project-ci/cd
 
 on:
   push:
-    branches: [docker]
+    branches: [docker, SSR+Docker]
   pull_request:
-    branches: [docker]
+    branches: [docker, SSR+Docker]
 
 jobs:
   test-and-build:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [20.x]
 
     steps:
       - name: Checkout code
@@ -49,7 +49,7 @@ jobs:
   docker-build:
     needs: test-and-build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/docker'
+    if: github.ref == 'refs/heads/docker' || github.ref == 'refs/heads/SSR+Docker'
 
     steps:
       - name: Checkout code
