@@ -49,7 +49,7 @@ jobs:
   docker-build:
     needs: test-and-build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/docker' || github.ref == 'refs/heads/SSR+Docker'
+    if: github.ref == 'refs/heads/docker' || github.ref == 'refs/heads/SSR%2BDocker'
 
     steps:
       - name: Checkout code
