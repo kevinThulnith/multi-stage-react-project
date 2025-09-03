@@ -76,6 +76,8 @@ const MemoryMatch: React.FC = () => {
 
   const isGameWon = cards.every((card) => card.isMatched);
 
+  const text = "Memory Match Game";
+
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-3xl font-bold mb-2 text-cyan-400">Memory Match</h2>
