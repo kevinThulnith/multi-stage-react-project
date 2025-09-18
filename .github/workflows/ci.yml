@@ -1,0 +1,108 @@
+name: multi-stage-react-project-ci/cd
+
+on:
+  push:
+    branches:
+      - docker
+      - "SSR+Docker"
+  pull_request:
+    branches:
+      - docker
+      - "SSR+Docker"
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Security audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Build project
+        run: npm run build
+        env:
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: dist/
+          retention-days: 14
+
+  docker-build:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: contains(fromJSON('["refs/heads/docker", "refs/heads/SSR+Docker"]'), github.ref)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Debug Branch Info
+        run: |
+          echo "Branch ref: ${{ github.ref }}"
+          echo "Branch name: ${{ github.ref_name }}"
+          echo "Is SSR+Docker branch: ${{ github.ref_name == 'SSR+Docker' }}"
+          echo "Is docker branch: ${{ github.ref_name == 'docker' }}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set image name
+        id: image-name
+        run: |
+          if [ "${{ github.ref_name }}" = "SSR+Docker" ]; then
+            echo "image-name=${{ secrets.DOCKER_USERNAME }}/vrt-games-website-ssr" >> $GITHUB_OUTPUT
+          else
+            echo "image-name=${{ secrets.DOCKER_USERNAME }}/vrt-games-website" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image-name.outputs.image-name }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=main-,suffix=-{{date 'YYYYMMDD'}},enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
