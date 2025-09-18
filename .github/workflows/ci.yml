@@ -63,8 +63,8 @@ jobs:
         run: |
           echo "Branch ref: ${{ github.ref }}"
           echo "Branch name: ${{ github.ref_name }}"
-          echo "Is SSR+Docker branch: ${{ github.ref == 'refs/heads/SSR+Docker' }}"
-          echo "Is docker branch: ${{ github.ref == 'refs/heads/docker' }}"
+          echo "Is SSR+Docker branch: ${{ github.ref_name == 'SSR+Docker' }}"
+          echo "Is docker branch: ${{ github.ref_name == 'docker' }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -78,7 +78,7 @@ jobs:
       - name: Set image name
         id: image-name
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/SSR+Docker" ]; then
+          if [ "${{ github.ref_name }}" = "SSR+Docker" ]; then
             echo "image-name=${{ secrets.DOCKER_USERNAME }}/vrt-games-website-ssr" >> $GITHUB_OUTPUT
           else
             echo "image-name=${{ secrets.DOCKER_USERNAME }}/vrt-games-website" >> $GITHUB_OUTPUT
