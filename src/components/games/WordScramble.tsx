@@ -69,7 +69,7 @@ const WordScramble: React.FC = () => {
     const prompt = `Provide a short, one-sentence clue for the word "${originalWord}" for a word scramble game. Do not use the word "${originalWord}" in your clue.`;
 
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const hintText = response.text();
