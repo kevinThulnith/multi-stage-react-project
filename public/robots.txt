@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://multi-stage-react-project.vercel.app/sitemap.xml
