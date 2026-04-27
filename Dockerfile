@@ -42,7 +42,7 @@ RUN npm install --production=true --no-fund --no-audit \
 RUN npm prune --omit=dev
 
 ENV NODE_ENV=production
-ENV HOST=127.0.0.1  
+ENV HOST=127.0.0.1
 ENV PORT=3000
 
 # Final stage with Nginx
@@ -68,7 +68,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # Create start script
 COPY start.sh /start.sh
-RUN chmod +x /start.sh
+RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh
 
 EXPOSE 5173
 
