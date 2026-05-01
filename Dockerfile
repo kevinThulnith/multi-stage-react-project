@@ -38,6 +38,10 @@ COPY --from=builder /app/dist/ /usr/share/nginx/html/
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
+# Add entripoint script
+COPY start.sh /start.sh
+RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh
+
 EXPOSE 5173
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/start.sh"]
