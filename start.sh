@@ -1,21 +1,32 @@
 #!/bin/sh
+set -e
 
-# Explicitly set environment variables for Node.js
-export NODE_ENV=production
-export PORT=3000
-export HOST=127.0.0.1
+# ── Runtime API key injection ────────────────────────────────
+# If GEMINI_API_KEY env var is set, replace the build-time placeholder
+# in the client JS bundle with the real key.
+#
+# Usage: docker run -e GEMINI_API_KEY=your_real_key ...
+#
+if [ -n "$GEMINI_API_KEY" ]; then
+  echo "Injecting API key into client bundle..."
+  find /app/dist/client/assets -name "*.js" | while read file; do
+    sed -i "s|__GEMINI_API_KEY_PLACEHOLDER__|${GEMINI_API_KEY}|g" "$file"
+  done
+  echo "API key injected successfully."
+else
+  echo "WARNING: GEMINI_API_KEY not set. API features may not work."
+fi
 
+# ── Start Node.js SSR server ─────────────────────────────────
 cd /app
 
-# Start Node.js server first
 echo "Starting Node.js SSR server on port 3000..."
-node --import tsx server.ts &
+NODE_ENV=production HOST=127.0.0.1 PORT=3000 node server.cjs &
 NODE_PID=$!
 
-# Give Node.js a moment to start
+# Wait for Node.js to start
 sleep 2
 
-# Check if process is running (Alpine-compatible method)
 if kill -0 $NODE_PID 2>/dev/null; then
   echo "Node.js server started successfully on port 3000"
 else
@@ -23,6 +34,6 @@ else
   exit 1
 fi
 
-# Start nginx in foreground
+# ── Start Nginx (foreground) ─────────────────────────────────
 echo "Starting Nginx on port 5173..."
 nginx -g "daemon off;"

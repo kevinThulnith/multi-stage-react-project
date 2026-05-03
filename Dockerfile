@@ -1,4 +1,4 @@
-# Build stage
+# ── Build stage ──────────────────────────────────────────────
 FROM node:22-alpine AS builder
 
 WORKDIR /app
@@ -16,57 +16,47 @@ COPY . .
 # Set environment variables from build args
 ENV VITE_GEMINI_API_KEY=$VITE_GEMINI_API_KEY
 
-# Build the application
+# Build client + SSR server bundles
 RUN npm run build
 
-# Remove development dependencies to reduce image size
-RUN npm prune --omit=dev
+# Bundle the production server into a single self-contained JS file
+# This eliminates the need for node_modules in the final image
+RUN npx esbuild server.prod.ts \
+      --bundle \
+      --platform=node \
+      --format=cjs \
+      --external:./dist/server/entry-server.js \
+      --outfile=server.cjs
 
-# Production Node stage - minimal
-FROM node:20-alpine AS node
+# Strip the Node.js binary BEFORE copying to final stage
+# (avoids a 127MB unstripped layer + 112MB strip layer in the final image)
+RUN apk add --no-cache binutils \
+    && strip /usr/local/bin/node \
+    && apk del binutils
 
-WORKDIR /app
-
-# Only copy what's needed to run the SSR server
-COPY --from=builder /app/package.json /app/package.json
-COPY --from=builder /app/dist /app/dist
-COPY --from=builder /app/server.ts /app/server.ts
-COPY --from=builder /app/index.html /app/index.html
-
-# Install only the minimal packages needed for production
-RUN npm install --production=true --no-fund --no-audit \
-    cross-env@7.0.3 tsx@4.20.3 compression@1.8.1 express@4.21.2 sirv@3.0.1 && \
-    rm -rf /root/.npm /tmp/*
-
-# Remove development dependencies to reduce image size
-RUN npm prune --omit=dev
-
-ENV NODE_ENV=production
-ENV HOST=127.0.0.1
-ENV PORT=3000
-
-# Final stage with Nginx
+# ── Final stage: Nginx + stripped Node ───────────────────────
 FROM nginx:1.25-alpine-slim AS production
 
-# Remove default nginx static assets
+# Remove default nginx static assets and config
 RUN rm -rf /usr/share/nginx/html/* \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /var/log/nginx/* \
-    && rm -rf /tmp/* \
     && rm -rf /etc/nginx/conf.d/default.conf
 
-# Copy the Node.js runtime from the node stage
-COPY --from=node /usr/local/bin/node /usr/local/bin/
-COPY --from=node /usr/lib/libgcc_s.so.1 /usr/lib/
-COPY --from=node /usr/lib/libstdc++.so.6 /usr/lib/
+# Copy the already-stripped Node.js binary (~70MB instead of 127MB)
+COPY --from=builder /usr/local/bin/node /usr/local/bin/
 
-# Copy the application from the node stage
-COPY --from=node /app /app
+# Copy required shared libraries for Node.js on Alpine
+COPY --from=builder /usr/lib/libgcc_s.so.1 /usr/lib/
+COPY --from=builder /usr/lib/libstdc++.so.6 /usr/lib/
+
+# Copy ONLY the built artifacts — NO node_modules!
+COPY --from=builder /app/server.cjs /app/server.cjs
+COPY --from=builder /app/dist/client /app/dist/client
+COPY --from=builder /app/dist/server/entry-server.js /app/dist/server/entry-server.js
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Create start script
+# Copy and prepare start script
 COPY start.sh /start.sh
 RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh
 
