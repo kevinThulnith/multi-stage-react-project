@@ -138,8 +138,6 @@ Choose your preferred setup method:
 
    > **Note:** The VITE_GEMINI_API_KEY is now actively used in some games for AI-powered features. You can obtain a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey). While the games will still function without the API key, some AI-enhanced features will be disabled.
 
- <br>
-
 ### 🎮 Running the Games
 
 #### Development Mode
@@ -211,13 +209,20 @@ The easiest way to deploy your Game Cave is using [Vercel](https://vercel.com/):
    - Automatic deployments on every push to main branch
    - Preview deployments for pull requests
 
+### 🌿 Branch Overview
+
+- `main` - default branch for the project
+- `SSR+Docker` - Docker with SSR
+- `SSR-Server-Side-Rendering` - server-side rendering setup
+- `docker` - main Docker setup
+
 ### Build Configuration
 
 For Vercel deployment, make sure your build settings are:
 
 - **Build Command:** `npm run build`
 - **Output Directory:** `dist`
-- **Install Command:** `npm install`
+- **Install Command:** `npm i`
 - **Root Directory:** `multi-stage-react-project`
 
 ### Environment Variables
@@ -238,7 +243,6 @@ For enhanced AI-powered gameplay features, you'll need to set up the Gemini API 
    ```
 
 3. **Get your Gemini API Key:**
-
    - Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
    - Create a new API key
    - Replace `your_gemini_api_key_here` with your actual key
@@ -283,11 +287,7 @@ docker compose version
 2. **Build the Docker image:**
 
    ```bash
-   # Basic build (without AI features)
-   docker build -t game-cave:dev .
-
-   # Build with Gemini API key for AI-powered features
-   docker build --build-arg VITE_GEMINI_API_KEY=your_gemini_api_key_here -t game-cave:dev .
+   docker build --build-arg VITE_GEMINI_API_KEY=__GEMINI_API_KEY_PLACEHOLDER__ -t game-cave:latest . --no-cache
    ```
 
    > **Note:** Using `--build-arg VITE_GEMINI_API_KEY` passes the API key as a build argument to enable AI-powered features in games like Hangman, Word Scramble, and Tic Tac Toe. Replace `your_gemini_api_key_here` with your actual Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
@@ -309,6 +309,9 @@ docker compose version
 
    # Run created docker image with custome container name
    docker run -p 5173:5173 --name game-cave-dev game-cave:dev
+
+   # With AI Features
+   docker run -d -p 5173:5173 -e GEMINI_API_KEY=your_real_key --name game-cave game-cave:latest
    ```
 
 5. **Access your games:**
